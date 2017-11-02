@@ -1,0 +1,71 @@
+body, html {
+  height: 100%;
+}
+
+.matbar-icon {
+  padding: 12px 14px 0 0;
+}
+
+@media only screen and (min-width: 1001px){
+  .chordline {
+    column-count: 2;
+    column-fill: auto;
+  }
+
+  .onlySmallScreen {
+    display: none !important;
+  }
+}
+
+@media only screen and (max-width: 1000px){
+  .cpSubtitle {
+    display: none;
+  }
+
+  .onlyBigScreen{
+    display: none !important;
+  }
+}
+
+.cpSubtitle {
+  color: #999;
+}
+
+.listSubtitle {
+  color: #999;
+}
+
+.mat-fill-bar {
+  flex: 1 1 auto;
+}
+
+.chordline {
+  line-height:2.3;
+  font-family: Arial;
+  height: 100%;
+  margin:0.2em 1ex 0.2em 1ex;
+  white-space:pre;
+}
+
+.chordline span.cpChorus {
+  display: inline-block;
+  border-left: 4px solid black;
+  padding-left: 5px;
+}
+
+.chordline span.cpChordLyric {
+  position:relative;
+  display: inline-block;
+}
+.chordline span.cpChord {
+  position:relative;
+  top:-1.2em; left:0;
+  font: 75%/1 sans-serif;
+  color:blue;
+}
+
+.chordline span.cpComment {
+  font-style: italic;
+  background-color: yellow;
+  color: green;
+}

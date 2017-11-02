@@ -1,0 +1,102 @@
+<mat-sidenav-container style="height: 100%">
+  <mat-sidenav #sidenav mode="side" [opened]="songlistOpened">
+    <mat-toolbar color="primary">
+      <span>
+        <mat-icon class="matbar-icon" (click)="songlistOpened = !songlistOpened">dehaze</mat-icon>
+      </span>
+      <span i18n="Application header@@application.header">SongBook</span>
+      <span>
+        <button mat-icon-button (click)="syncDb()">
+          <mat-icon>cached</mat-icon>
+        </button>
+      </span>
+    </mat-toolbar>
+    <app-songlist></app-songlist>
+  </mat-sidenav>
+  <mat-toolbar>
+    <span>
+      <mat-icon class="matbar-icon" (click)="songlistOpened = !songlistOpened">dehaze</mat-icon>
+    </span>
+      <span *ngIf="chordProRoot">{{ chordProRoot.title }}</span> <span class="cpSubtitle" *ngIf="chordProRoot && chordProRoot.subtitle">&nbsp;- {{ chordProRoot.subtitle }}</span>
+      <span *ngIf="!chordProRoot">
+        <mat-icon class="matbar-icon">keyboard_backspace</mat-icon>
+      </span>
+    <span *ngIf="!chordProRoot">Tady si vyber písničku</span>
+    <span class="mat-fill-bar"></span>
+      <span>
+        <button mat-icon-button [matMenuTriggerFor]="settingsMenu" class="onlySmallScreen"><mat-icon>settings</mat-icon></button>
+        <mat-menu #settingsMenu="matMenu">
+          <button mat-menu-item [matMenuTriggerFor]="whoMenu">Kdo jsi: {{ musician ? musician : 'Nevím' }}</button>
+          <button mat-menu-item *ngIf="chordProRoot" [matMenuTriggerFor]="capoMenu">Capo {{ capo }}</button>
+          <button mat-menu-item [matMenuTriggerFor]="fontMenu">Velikost textu</button>
+          <button mat-menu-item *ngIf="chordProRoot" [matMenuTriggerFor]="keyMenu">Transpozice {{ transpose >= 0 ? '+' : '' }}{{transpose}}</button>
+        </mat-menu>
+
+
+        <button mat-button [matMenuTriggerFor]="whoMenu" class="onlyBigScreen">Kdo jsi: {{ musician ? musician : 'Nevím' }}</button>
+      <mat-menu #whoMenu="matMenu">
+        <button mat-menu-item (click)="clearMusician()"> - </button>
+        <button mat-menu-item (click)="setMusician('Michal')">Michal</button>
+        <button mat-menu-item (click)="setMusician('Lucka')">Lucka</button>
+        <button mat-menu-item (click)="setMusician('Gabča')">Gabča</button>
+        <button mat-menu-item (click)="setMusician('Kuba')">Kuba</button>
+        <button mat-menu-item (click)="setMusician('Adam')">Adam</button>
+      </mat-menu>
+
+      <button mat-button [matMenuTriggerFor]="capoMenu" *ngIf="chordProRoot" class="onlyBigScreen">Capo {{ capo }}</button>
+      <mat-menu #capoMenu="matMenu">
+        <button mat-menu-item (click)="setCapo(0)">0</button>
+        <button mat-menu-item (click)="setCapo(1)">+1</button>
+        <button mat-menu-item (click)="setCapo(2)">+2</button>
+        <button mat-menu-item (click)="setCapo(3)">+3</button>
+        <button mat-menu-item (click)="setCapo(4)">+4</button>
+        <button mat-menu-item (click)="setCapo(5)">+5</button>
+        <button mat-menu-item (click)="setCapo(6)">+6</button>
+        <button mat-menu-item (click)="setCapo(7)">+7</button>
+        <button mat-menu-item (click)="setCapo(8)">+8</button>
+        <button mat-menu-item (click)="setCapo(9)">+9</button>
+      </mat-menu>
+      <button mat-icon-button [matMenuTriggerFor]="fontMenu" class="onlyBigScreen"><mat-icon>text_fields</mat-icon></button>
+      <mat-menu #fontMenu="matMenu">
+        <button mat-menu-item (click)="setFontSize(1.0)">Tiťerný</button>
+        <button mat-menu-item (click)="setFontSize(1.2)">Malý</button>
+        <button mat-menu-item (click)="setFontSize(1.4)">Normální</button>
+        <button mat-menu-item (click)="setFontSize(1.6)">Větší</button>
+        <button mat-menu-item (click)="setFontSize(1.8)">Obrovský</button>
+      </mat-menu>
+
+      <button mat-button [matMenuTriggerFor]="keyMenu" *ngIf="chordProRoot" class="onlyBigScreen">Transpozice {{ transpose >= 0 ? '+' : '' }}{{transpose}}</button>
+      <mat-menu #keyMenu="matMenu">
+        <button mat-menu-item (click)="setTranspose(-5)">-5</button>
+        <button mat-menu-item (click)="setTranspose(-4)">-4</button>
+        <button mat-menu-item (click)="setTranspose(-3)">-3</button>
+        <button mat-menu-item (click)="setTranspose(-2)">-2</button>
+        <button mat-menu-item (click)="setTranspose(-1)">-1</button>
+        <button mat-menu-item (click)="setTranspose(0)">0</button>
+        <button mat-menu-item (click)="setTranspose(1)">+1</button>
+        <button mat-menu-item (click)="setTranspose(2)">+2</button>
+        <button mat-menu-item (click)="setTranspose(3)">+3</button>
+        <button mat-menu-item (click)="setTranspose(4)">+4</button>
+        <button mat-menu-item (click)="setTranspose(5)">+5</button>
+      </mat-menu>
+    </span>
+  </mat-toolbar>
+
+
+  <div class="chordline" *ngIf="chordProRoot" [style.font-size.em]="fontSizeEm">
+    <ng-template ngFor let-cpElem [ngForOf]="chordProRoot.elements">
+      <ng-template [ngIf]="cpElem.kind === 'inline'">
+        <app-inline-element [cpElem]="cpElem" [capo]="capo" [transpose]="transpose" [musician]="musician"></app-inline-element>
+      </ng-template>
+
+      <ng-template [ngIf]="cpElem.kind === 'block'">
+        <app-block-element [cpElem]="cpElem" [capo]="capo" [transpose]="transpose" [musician]="musician"></app-block-element>
+      </ng-template>
+    </ng-template>
+  </div>
+
+  <!--<div *ngIf="!chordProRoot">-->
+    <!--<h1 class="mat-display-1" style="text-align: center; margin-top: 1em;">Klikni vlevo nahoře a vyber si písničku</h1>-->
+  <!--</div>-->
+</mat-sidenav-container>
+
